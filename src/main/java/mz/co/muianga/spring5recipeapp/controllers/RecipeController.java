@@ -1,8 +1,10 @@
 package mz.co.muianga.spring5recipeapp.controllers;
 
+import mz.co.muianga.spring5recipeapp.commands.RecipeCommand;
 import mz.co.muianga.spring5recipeapp.service.RecipeService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -23,5 +25,18 @@ public class RecipeController {
         model.addAttribute("recipe", recipeService.findById(id));
 
         return "recipe/show";
+    }
+
+    @RequestMapping("recipe/new")
+    public String newRecipe(Model model) {
+        model.addAttribute("recipe", new RecipeCommand());
+
+        return "recipe/recipeForm";
+    }
+
+    public String saveOrUpdate(@ModelAttribute RecipeCommand command) {
+        RecipeCommand savedCommand = recipeService.save(command);
+
+        return "redirect:/recipe/show/" + savedCommand.getId();
     }
 }

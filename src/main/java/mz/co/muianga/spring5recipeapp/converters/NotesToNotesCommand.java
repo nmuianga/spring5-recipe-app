@@ -5,10 +5,12 @@ import mz.co.muianga.spring5recipeapp.commands.NotesCommand;
 import mz.co.muianga.spring5recipeapp.domain.Notes;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 
 /*
  * Created by Nilvandro Muianga on 2/10/2020
  */
+@Component
 public class NotesToNotesCommand implements Converter<Notes, NotesCommand> {
 
     @Synchronized

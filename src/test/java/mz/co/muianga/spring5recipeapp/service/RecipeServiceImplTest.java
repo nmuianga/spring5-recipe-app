@@ -1,5 +1,7 @@
 package mz.co.muianga.spring5recipeapp.service;
 
+import mz.co.muianga.spring5recipeapp.converters.RecipeCommandToRecipe;
+import mz.co.muianga.spring5recipeapp.converters.RecipeToRecipeCommand;
 import mz.co.muianga.spring5recipeapp.domain.Recipe;
 import mz.co.muianga.spring5recipeapp.repositories.RecipeRepository;
 import org.junit.Before;
@@ -8,7 +10,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.ui.Model;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -26,11 +27,17 @@ public class RecipeServiceImplTest {
     @Mock
     RecipeRepository recipeRepository;
 
+    @Mock
+    RecipeCommandToRecipe recipeCommandToRecipe;
+
+    @Mock
+    RecipeToRecipeCommand recipeToRecipeCommand;
+
     @Before
     public void setUp() {
         //Inicializa os @Mocks
         MockitoAnnotations.initMocks(this);
-        recipeService = new RecipeServiceImpl(recipeRepository);
+        recipeService = new RecipeServiceImpl(recipeRepository, recipeCommandToRecipe, recipeToRecipeCommand);
     }
 
     @Test

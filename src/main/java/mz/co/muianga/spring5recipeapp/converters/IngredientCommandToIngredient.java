@@ -1,9 +1,13 @@
 package mz.co.muianga.spring5recipeapp.converters;
 
+import lombok.Synchronized;
 import mz.co.muianga.spring5recipeapp.commands.IngredientCommand;
 import mz.co.muianga.spring5recipeapp.domain.Ingredient;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
+
+import javax.validation.constraints.Null;
 
 /*
  * Created by Nilvandro Muianga on 2/10/2020
@@ -17,6 +21,8 @@ public class IngredientCommandToIngredient implements Converter<IngredientComman
         this.uomConverter = uomConverter;
     }
 
+    @Synchronized
+    @Nullable
     @Override
     public Ingredient convert(IngredientCommand source) {
         if (source == null) {

@@ -2,8 +2,11 @@ package mz.co.muianga.spring5recipeapp.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import mz.co.muianga.spring5recipeapp.commands.IngredientCommand;
+import mz.co.muianga.spring5recipeapp.commands.RecipeCommand;
+import mz.co.muianga.spring5recipeapp.commands.UnitOfMeasureCommand;
 import mz.co.muianga.spring5recipeapp.domain.Ingredient;
 import mz.co.muianga.spring5recipeapp.domain.Recipe;
+import mz.co.muianga.spring5recipeapp.domain.UnitOfMeasure;
 import mz.co.muianga.spring5recipeapp.repositories.RecipeRepository;
 import mz.co.muianga.spring5recipeapp.service.IngredientService;
 import mz.co.muianga.spring5recipeapp.service.RecipeService;
@@ -29,6 +32,23 @@ public class IngredientController {
         this.recipeService = recipeService;
         this.ingredientService = ingredientService;
         this.unitOfMeasureService = unitOfMeasureService;
+    }
+
+    @GetMapping
+    @RequestMapping("recipe/{recipeId}/ingredient/new")
+    public String newRecipe(@PathVariable String recipeId, Model model) {
+        //make sure we have a good id valiue
+        RecipeCommand recipeCommand = recipeService.findCOmmandById(Long.valueOf(recipeId));
+
+        //todo raise exception if null
+        //need to return back parent id for hidden form property
+        IngredientCommand ingredientCommand = new IngredientCommand();
+        ingredientCommand.setRecipeId(Long.valueOf(recipeId));
+        model.addAttribute("ingredient", ingredientCommand);
+        //init uom
+        ingredientCommand.setUom(new UnitOfMeasureCommand());
+        model.addAttribute("uomList", unitOfMeasureService.listAllUoms());
+        return "recipe/ingredient/ingredientform";
     }
 
     @GetMapping

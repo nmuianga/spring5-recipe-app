@@ -5,6 +5,7 @@ import mz.co.muianga.spring5recipeapp.commands.RecipeCommand;
 import mz.co.muianga.spring5recipeapp.converters.RecipeCommandToRecipe;
 import mz.co.muianga.spring5recipeapp.converters.RecipeToRecipeCommand;
 import mz.co.muianga.spring5recipeapp.domain.Recipe;
+import mz.co.muianga.spring5recipeapp.exception.NotFoundException;
 import mz.co.muianga.spring5recipeapp.repositories.RecipeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,8 +42,11 @@ public class RecipeServiceImpl implements RecipeService {
     public Recipe findById(Long id) {
         Optional<Recipe> recipeOptional = recipeRepository.findById(id);
 
-        if (!recipeOptional.isPresent())
-            throw new RuntimeException("Recipe Not Found");
+        if (!recipeOptional.isPresent()) {
+            //throw new RuntimeException("Recipe Not Found");
+            throw new NotFoundException("Recipe Not Found");
+        }
+
         return recipeOptional.get();
     }
 

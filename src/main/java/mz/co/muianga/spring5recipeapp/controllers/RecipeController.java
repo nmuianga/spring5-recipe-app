@@ -7,8 +7,11 @@ import mz.co.muianga.spring5recipeapp.service.RecipeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.validation.Valid;
 
 /**
  * Created bt Nilvandro Muianga on 2/4/2020
@@ -17,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class RecipeController {
 
+    private static final String RECIPE_FORM_URL = "recipe/recipeForm";
     private final RecipeService recipeService;
 
     public RecipeController(RecipeService recipeService) {
@@ -48,7 +52,13 @@ public class RecipeController {
     }
 
     @PostMapping("recipe")
-    public String saveOrUpdate(@ModelAttribute RecipeCommand command) {
+    public String saveOrUpdate(@Valid @ModelAttribute("recipe") RecipeCommand command, BindingResult result) {
+
+        if (result.hasErrors()) {
+            result.getAllErrors().forEach(objectError -> log.debug(objectError.toString()));
+
+            return RECIPE_FORM_URL;
+        }
         RecipeCommand savedCommand = recipeService.save(command);
 
         return "redirect:/recipe/" + savedCommand.getId() + "/show";
@@ -77,16 +87,4 @@ public class RecipeController {
         return modelAndView;
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(NumberFormatException.class)
-    public ModelAndView handleNumberFormatExcption(Exception exception) {
-        log.error("Handling Number Format Exception");
-        log.error(exception.getMessage());
-
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("400error");
-        modelAndView.addObject("exception", exception);
-
-        return modelAndView;
-    }
 }

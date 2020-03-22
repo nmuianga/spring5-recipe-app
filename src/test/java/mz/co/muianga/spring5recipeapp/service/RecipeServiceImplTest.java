@@ -10,6 +10,10 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -33,11 +37,15 @@ public class RecipeServiceImplTest {
     @Mock
     RecipeToRecipeCommand recipeToRecipeCommand;
 
+    MockMvc mockMvc;
+
     @Before
     public void setUp() {
         //Inicializa os @Mocks
         MockitoAnnotations.initMocks(this);
         recipeService = new RecipeServiceImpl(recipeRepository, recipeCommandToRecipe, recipeToRecipeCommand);
+
+        mockMvc = MockMvcBuilders.standaloneSetup(recipeService).build();
     }
 
     @Test
@@ -69,5 +77,12 @@ public class RecipeServiceImplTest {
 
         //Verfica quantas vezes o findAll() foi chamado
         Mockito.verify(recipeRepository, Mockito.times(1)).findAll();
+    }
+
+    @Test
+    public void testNumberFormatException() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/recipe/1/show"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.view().name("400error"));
     }
 }

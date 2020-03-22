@@ -1,5 +1,6 @@
 package mz.co.muianga.spring5recipeapp.controllers;
 
+import mz.co.muianga.spring5recipeapp.commands.RecipeCommand;
 import mz.co.muianga.spring5recipeapp.domain.Recipe;
 import mz.co.muianga.spring5recipeapp.service.RecipeService;
 import org.junit.Before;
@@ -8,6 +9,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -25,23 +27,43 @@ public class RecipeControllerTest {
 
     RecipeController recipeController;
 
+    MockMvc mockMvc;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         recipeController = new RecipeController(recipeService);
+
+        mockMvc = MockMvcBuilders.standaloneSetup(recipeController)
+                .setControllerAdvice(new ControllerExceptionHandler()).build();
     }
 
     @Test
     public void testGetRecipe() throws Exception {
         Recipe recipe = new Recipe();
         recipe.setId(1L);
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
 
         Mockito.when(recipeService.findById(ArgumentMatchers.anyLong())).thenReturn(recipe);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/recipe/show/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/recipe/1/show"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("recipe/show"));
+    }
+
+    @Test
+    public void testNewRecipe() throws Exception {
+        RecipeCommand command = new RecipeCommand();
+        command.setId(2L);
+
+        Mockito.when(recipeService.save(ArgumentMatchers.any())).thenReturn(command);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/recipe")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("id", "")
+                .param("description", "some string")
+                .param("diresctions", "some direction"))
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.view().name("redirect:/recipe/2/show"));
     }
 
 }
